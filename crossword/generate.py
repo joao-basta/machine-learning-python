@@ -120,8 +120,29 @@ class CrosswordCreator():
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
         """
-        raise NotImplementedError
 
+        overlap = self.crossword.overlaps[x,y]
+        if overlap == None:
+            return False
+        
+        i,j = overlap
+        revised = False
+        to_remove = []
+
+        for x_word in self.domains[x]:
+            match_found = False
+            for y_word in self.domains[y]:
+                if x_word[i] == y_word[j]:
+                    match_found = True
+                    break
+            if not match_found:
+                to_remove.append(x_word)
+                revised = True
+        for word in to_remove:
+            self.domains[x].remove(word)
+
+        return revised
+                
     def ac3(self, arcs=None):
 
         raise NotImplementedError
