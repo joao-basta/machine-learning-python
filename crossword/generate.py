@@ -145,7 +145,24 @@ class CrosswordCreator():
                 
     def ac3(self, arcs=None):
 
-        raise NotImplementedError
+        queue = []
+        if arcs is None:
+            for x in self.crossword.variables:
+                for y in self.crossword.neighbors(x):
+                    queue.append((x,y))
+        else:
+            queue = list(arcs)
+
+        while queue:
+            x,y =queue.pop(0)
+
+            if self.revise(x,y):
+                if len(self.domains[x]) == 0:
+                    return False
+                for z in self.crossword.neighbors(x):
+                    if z != y:
+                        queue.append((z,y))
+        return True
 
     def assignment_complete(self, assignment):
 
@@ -196,6 +213,16 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
+
+        unassigned = []
+        for v in self.crossword.variables:
+            if v not in assignment:
+                unassigned.append(v)
+        return min(
+            unassigned, 
+            key=lambda var: (len(self.domains[var]), -len(self.crossword.neighbors(var)))
+        )
+
         raise NotImplementedError
 
     def backtrack(self, assignment):
