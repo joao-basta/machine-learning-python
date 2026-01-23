@@ -107,8 +107,8 @@ class CrosswordCreator():
             for word in self.domains[variables]:
                 if len(word) != length_needed:
                     to_remove.append(word)
-                    for word in to_remove:
-                        self.domains[variables].remove(word)
+            for word in to_remove:
+                self.domains[variables].remove(word)
     
 
     def revise(self, x, y):
@@ -191,7 +191,7 @@ class CrosswordCreator():
                         (i,j) = overlap
 
                         neighbor_word = assignment[neighbor]
-                        if word[i] != assignment[neighbor[j]]:
+                        if word[i] != neighbor_word[j]:
                             return False
         return True
         
@@ -203,7 +203,23 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
-        raise NotImplementedError
+        
+        def count_ruled_out(value):
+            count = 0
+            for neighbor in self.crossword.neighbors(var):
+                if neighbor in assignment:
+                    continue
+                
+                overlap = self.crossword.overlaps[var, neighbor]
+                if overlap:
+                    i,j = overlap
+
+                    for neighbor_value in self.domains[neighbor]:
+                        if value[i] != neighbor_value[j]:
+                            count +=1
+            return count
+        return sorted(self.domains[var], key = count_ruled_out)   
+
 
     def select_unassigned_variable(self, assignment):
         """
@@ -223,7 +239,6 @@ class CrosswordCreator():
             key=lambda var: (len(self.domains[var]), -len(self.crossword.neighbors(var)))
         )
 
-        raise NotImplementedError
 
     def backtrack(self, assignment):
         """
@@ -234,7 +249,22 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        raise NotImplementedError
+
+        if self.assignment_complete(assignment):
+            return assignment
+        
+        var =  self.select_unassigned_variable(assignment)
+
+        for value in self.order_domain_values(var, assignment):
+            assignment[var] = value
+
+            if self.consistent(assignment):
+                result = self.backtrack(assignment)
+                if result is not None:
+                    return result
+            del assignment[var]
+
+        return None
 
 
 def main():
