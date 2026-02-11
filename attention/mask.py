@@ -45,7 +45,11 @@ def get_mask_token_index(mask_token_id, inputs):
     Return the index of the token with the specified `mask_token_id`, or
     `None` if not present in the `inputs`.
     """
-    # TODO: Implement this function
+
+    for i, token_id in enumerate(input["input_ids"][0]):
+        if token_id ==mask_token_id:
+            return i
+    return None
     raise NotImplementedError
 
 
@@ -55,7 +59,9 @@ def get_color_for_attention_score(attention_score):
     Return a tuple of three integers representing a shade of gray for the
     given `attention_score`. Each value should be in the range [0, 255].
     """
-    # TODO: Implement this function
+
+    value = round(attention_score.numpy()*255)
+    return(value, value, value)
     raise NotImplementedError
 
 
