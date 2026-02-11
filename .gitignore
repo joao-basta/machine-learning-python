@@ -1,0 +1,21 @@
+# Python stuff
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# TensorFlow/Machine Learning models
+*.h5
+*.keras
+*.saved_model/
+model_weights/
+
+# Dataset folders (Don't upload thousands of images!)
+gtsrb/
+sentences/
+
+# OS specific
+.DS_Store
+Thumbs.db
