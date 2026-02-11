@@ -62,6 +62,13 @@ def preprocess(sentence):
     and removing any word that does not contain at least one alphabetic
     character.
     """
+
+    tokens = nltk.word_tokenize(sentence.lower())
+    clean_tokens =[
+        word for word in tokens:
+        if any(char.isalpha()for char in word)
+    ]
+    return clean_tokens
     raise NotImplementedError
 
 
