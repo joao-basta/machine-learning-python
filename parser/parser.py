@@ -19,7 +19,7 @@ S -> NP VP | S Conj S | S Conj VP
 NP -> N | Det N | Det AdjN | AdjN | NP PP
 VP -> V | V NP | VP PP | Adv VP | VP Adv
 AdjN -> Adj N | Adj AdjN
-PP -> P NP
+PP -> P NP  
 """
 
 grammar = nltk.CFG.fromstring(NONTERMINALS + TERMINALS)
@@ -68,10 +68,11 @@ def preprocess(sentence):
     """
 
     tokens = nltk.word_tokenize(sentence.lower())
-    clean_tokens =[
-        word for word in tokens:
+    clean_tokens = [
+        word for word in tokens
         if any(char.isalpha()for char in word)
     ]
+    
     return clean_tokens
     raise NotImplementedError
 
@@ -83,6 +84,18 @@ def np_chunk(tree):
     whose label is "NP" that does not itself contain any other
     noun phrases as subtrees.
     """
+    chunks = []
+    for subtree in tree.subtree():
+        if subtree.label() == "NP":
+            contains_other_NP = any(
+                child.label() == "NP"
+                for child in list(subtree.subtrees())[:1]
+            )
+            if not contains_other_NP:
+                chunks.append(subtree)
+
+    return chunks
+
     raise NotImplementedError
 
 
