@@ -26,8 +26,8 @@ def main():
     if mask_token_index is None:
         sys.exit(f"Input must include mask token {tokenizer.mask_token}.")
 
-    # Use model to process input
-    model = TFBertForMaskedLM.from_pretrained(MODEL)
+    # This tells BERT to ignore the safetensors file and use the standard weights
+    model = TFBertForMaskedLM.from_pretrained(MODEL, from_pt=True)
     result = model(**inputs, output_attentions=True)
 
     # Generate predictions
@@ -46,7 +46,7 @@ def get_mask_token_index(mask_token_id, inputs):
     `None` if not present in the `inputs`.
     """
 
-    for i, token_id in enumerate(input["input_ids"][0]):
+    for i, token_id in enumerate(inputs["input_ids"][0]):
         if token_id ==mask_token_id:
             return i
     return None
@@ -76,13 +76,15 @@ def visualize_attentions(tokens, attentions):
     include both the layer number (starting count from 1) and head number
     (starting count from 1).
     """
-    # TODO: Update this function to produce diagrams for all layers and heads.
-    generate_diagram(
-        1,
-        1,
-        tokens,
-        attentions[0][0][0]
-    )
+
+    for layer_number, attention_layer in enumerate(attentions):
+        for head_number, head_attention in enumerate(attention_layer[0]):
+            generate_diagram(
+                layer_number+1,
+                head_number +1,
+                tokens,
+                head_attention
+            )
 
 
 def generate_diagram(layer_number, head_number, tokens, attention_weights):

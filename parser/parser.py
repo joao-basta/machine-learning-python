@@ -85,7 +85,7 @@ def np_chunk(tree):
     noun phrases as subtrees.
     """
     chunks = []
-    for subtree in tree.subtree():
+    for subtree in tree.subtrees():
         if subtree.label() == "NP":
             contains_other_NP = any(
                 child.label() == "NP"
